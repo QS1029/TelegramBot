@@ -51,7 +51,7 @@ async def help(message: types.Message):
     await message.reply('how about you kindly discombobulat e')
 
 #LOBOTOMY
-@dp.message_handler(commands='lobotomy')
+@dp.message_handler(commands='lobotomy ')
 async def help(message: types.Message):
     await message.answer('am i the worst telegram bot because i was made by you, or was i made by you because i am the worst telegram bot?')
 
