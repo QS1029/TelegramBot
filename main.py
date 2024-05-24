@@ -2,8 +2,6 @@ from aiogram import Bot, Dispatcher, types, executor
 from config import TELEGRAM_TOKEN
 from keyboard.keyboards import get_keyboard_start1, get_keyboard_start2
 from database.database import initialize_db, get_user, add_user
-import random
-from datetime import datetime
 
 bot = Bot(token = TELEGRAM_TOKEN)
 dp = Dispatcher(bot)
@@ -14,7 +12,6 @@ async def set_commands(bot: Bot):
     commands = [
         types.BotCommand(command = '/start', description = "Вызвать меню"),
         types.BotCommand(command = '/help', description = "Памятка о библиотеке Телеграм бота"),
-        #types.BotCommand(command = '/lobotomy', description = "but would you win?")
     ]
     await bot.set_my_commands(commands)
 
@@ -25,7 +22,7 @@ async def start(message: types.Message):
     if user is None: add_user(message.from_user.id, message.from_user.username, message.from_user.first_name,
     message.from_user.last_name)
     await message.answer('Ты можешь спросить меня о коммандах git, которые часто используются пользователями,'
-                         'и часто забываются новичками.',
+                         'и часто забываются новичками. (Конкретно тобой :) )',
                         reply_markup = get_keyboard_start1())
 
 @dp.callback_query_handler(lambda c: c.data == 'push_tutorial')
@@ -50,30 +47,54 @@ async def commit_name_display(callback_query: types.CallbackQuery):
                                            "оставить пустым для отображения имени вашего компьютера.\n"
                                            "git config --global 'user.email' 'Введите сюда ваш EMail.'")
 
+@dp.callback_query_handler(lambda c: c.data == 'token_question')
+async def commit_name_display(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("Если в вашем коде есть токены, их нужно грамотно скрыть перед push'ом на GitHub.\n"
+                                        "1) Создайте файл .env в директории проекта, и напишите туда ваш токен\n"
+                                        "   API_KEY = Ваш API ключ\n"
+                                        "2) Создайте файл .py (можно назвать config.py), и напишите туда данный код:\n"
+                                        "   import os\n"
+                                        "   from dotenv import load_dotenv\n"
+                                        "   load_dotenv()\n"
+                                        "   ИмяПеременнойТокена = os.getenv('API_KEY')\n"
+                                        "3) В вашем файле main.py импортируйте переменную с токеном из файла c кодом из 2 шага\n"
+                                        "   from config.py import ИмяПеременнойТокена\n"
+                                        "4) Создайте файл .gitignore, и впишите туда весь код с данной ссылки\n"
+                                        "   https://www.toptal.com/developers/gitignore/api/python,venv")
+
+@dp.callback_query_handler(lambda c: c.data == 'github_link')
+async def commit_name_display(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("https://github.com/QS1029")
+
+@dp.callback_query_handler(lambda c: c.data == 'practice_progress')
+async def commit_name_display(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("За данную учебную практику было изучено несколько полезных тем:\n"
+                                        "- Написание Telegram бота на языке Python\n"
+                                        "- Использование разных клавиатур меню для бота Telegram\n"
+                                        "- Написание и подключение к боту простой базы данных на SQL\n"
+                                        "- Опыт в использовании GitHub и комманд Git\n"
+                                        "- Написание нейро-ассистента в Telegram, с использованием YandexGPT")
+
 @dp.callback_query_handler(lambda c: c.data == 'go_to_2')
 async def go_to_2(callback_query: types.CallbackQuery):
-    await callback_query.message.edit_text('Sentenced to be sealed away in keyboard 2 (Unseal yourself with that button fr)',
+    await callback_query.message.edit_text('Ты можешь спросить меня о коммандах git, которые часто используются пользователями,'
+                         'и часто забываются новичками. (Конкретно тобой :) )',
                            reply_markup = get_keyboard_start2())
 
 @dp.callback_query_handler(lambda c: c.data == 'go_to_1')
 async def go_to_1(callback_query: types.CallbackQuery):
     await callback_query.message.edit_text('Ты можешь спросить меня о коммандах git, которые часто используются пользователями,'
-                         'и часто забываются новичками.', reply_markup=get_keyboard_start1())
+                         'и часто забываются новичками. (Конкретно тобой :) )', reply_markup=get_keyboard_start1())
 
 #HELP
 @dp.message_handler(commands = 'help')
 async def help(message: types.Message):
-    await message.answer('При написании нового бота, устанавливай aiogram версии 2.22.2')
-
-#LOBOTOMY
-@dp.message_handler(commands='lobotomy ')
-async def help(message: types.Message):
-    await message.answer('am i the worst telegram bot because i was made by you, or was i made by you because i am the worst telegram bot?')
+    await message.answer('Бот написан с использованием aiogram 2.22.2')
 
 #STANDART REPLY
 @dp.message_handler()
 async def echo(message: types.Message):
-    await message.answer('a very thoughtful reply, hmmm yes yes i agree')
+    await message.answer('Я не способен разговаривать с тобой, нажми на кнопку в меню.')
 
 async def on_startup(dispatcher):
     await set_commands(dispatcher.bot)
